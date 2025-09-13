@@ -9,7 +9,7 @@ interface ServiceDetailModalProps {
   onBook?: (service: Service) => void;
 }
 
-const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({ service, isOpen, onClose, onBook }) => {
+const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({ service, isOpen, onClose, onBook: _onBook }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedDate, setSelectedDate] = useState<string>(''); // YYYY-MM-DD
   const [selectedTime, setSelectedTime] = useState<string>(''); // HH:MM
