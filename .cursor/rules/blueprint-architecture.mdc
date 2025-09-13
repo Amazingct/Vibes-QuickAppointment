@@ -1,0 +1,249 @@
+---
+alwaysApply: true
+---
+
+# Blueprint Architecture Guidelines - VCP Project
+
+## Main Application Structure
+
+### Keep [main.py](mdc:backend/main.py) Simple
+
+The main application file should ONLY contain:
+1. **Application factory** (`create_app()`)
+2. **Basic configuration** and extension initialization
+3. **Blueprint registration** with proper error handling
+4. **Global error handlers** and middleware
+5. **Health check endpoints** (/, /api)
+6. **Application startup** logic
+
+#### ✅ Correct main.py Pattern:
+```python
+from flask import Flask, jsonify
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+
+from config import Config
+from database import db, init_db
+
+def create_app() -> Flask:
+    """Application factory"""
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    
+    # Initialize extensions
+    CORS(app, origins=Config.CORS_ORIGINS)
+    jwt = JWTManager(app)
+    init_db(app)
+    
+    # Register blueprints
+    register_blueprints(app)
+    
+    # Global error handlers
+    register_error_handlers(app)
+    
+    # Basic health endpoints
+    @app.route('/')
+    def health_check():
+        return jsonify({"status": "healthy"})
+    
+    return app
+
+def register_blueprints(app: Flask):
+    """Register all application blueprints"""
+    try:
+        from blueprints.users import users_bp
+        app.register_blueprint(users_bp, url_prefix='/api/users')
+    except ImportError as e:
+        print(f"Warning: Could not import users blueprint: {e}")
+    
+    # Add more blueprints here as needed
+    # from blueprints.posts import posts_bp
+    # app.register_blueprint(posts_bp, url_prefix='/api/posts')
+```
+
+#### ❌ Avoid in main.py:
+- Business logic or data processing
+- Complex route handlers
+- Database model operations
+- Validation functions
+- Multiple endpoint definitions
+
+## Blueprint Organization
+
+### All Endpoints Go in Blueprints
+
+Create separate blueprint files in [blueprints/](mdc:backend/blueprints/) directory:
+
+#### Blueprint File Structure:
+```
+backend/blueprints/
+├── __init__.py         # Empty or blueprint registry
+├── users.py           # User management endpoints
+├── posts.py           # Post/content endpoints
+```
+
+### Blueprint Template Pattern
+
+#### Every blueprint file should follow this structure:
+```python
+"""
+[Feature] Blueprint - [Description]
+Handles [specific functionality] API endpoints
+"""
+
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from database import db, ModelName
+
+# Create blueprint
+feature_bp = Blueprint('feature', __name__)
+
+# Helper functions (validation, utilities)
+def validate_input(data):
+    """Validation logic here"""
+    pass
+
+# Route handlers
+@feature_bp.route('/', methods=['GET'])
+@jwt_required()
+def list_items():
+    """List items with pagination"""
+    pass
+
+@feature_bp.route('/', methods=['POST'])
+@jwt_required()
+def create_item():
+    """Create new item"""
+    pass
+
+@feature_bp.route('/<int:item_id>', methods=['GET'])
+@jwt_required()
+def get_item(item_id):
+    """Get specific item"""
+    pass
+```
+
+### Blueprint Registration Rules
+
+#### In main.py, ALWAYS use this pattern:
+```python
+def register_blueprints(app: Flask):
+    """Register all application blueprints with error handling"""
+    
+    # Users blueprint (core functionality)
+    try:
+        from blueprints.users import users_bp
+        app.register_blueprint(users_bp, url_prefix='/api/users')
+    except ImportError as e:
+        print(f"Warning: Could not import users blueprint: {e}")
+    
+    # Authentication blueprint (if separate from users)
+    try:
+        from blueprints.auth import auth_bp
+        app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    except ImportError:
+        pass  # Optional blueprint
+    
+    # Feature blueprints
+    try:
+        from blueprints.posts import posts_bp
+        app.register_blueprint(posts_bp, url_prefix='/api/posts')
+    except ImportError:
+        pass  # Optional blueprint
+```
+
+#### Blueprint Import Guidelines:
+1. **Always import inside the function** - avoids circular imports
+2. **Use try/except blocks** - graceful handling of missing blueprints
+3. **Clear URL prefixes** - `/api/[resource]` pattern
+4. **Document optional vs required** blueprints
+
+## Separation of Concerns
+
+### Main.py Responsibilities:
+- ✅ Flask app creation and configuration
+- ✅ Extension initialization (CORS, JWT, Database)
+- ✅ Blueprint registration with error handling
+- ✅ Global error handlers and middleware
+- ✅ Basic health/info endpoints only
+- ✅ Application startup logic
+
+### Blueprint Responsibilities:
+- ✅ All feature-specific API endpoints
+- ✅ Input validation and sanitization
+- ✅ Business logic and data processing
+- ✅ Database operations and queries
+- ✅ Response formatting and error handling
+- ✅ Authentication and authorization checks
+
+### Configuration Responsibilities ([config.py](mdc:backend/config.py)):
+- ✅ Environment variable loading
+- ✅ Database connection settings
+- ✅ JWT and security configuration
+- ✅ External service credentials
+
+## Error Handling Architecture
+
+### Global Error Handlers (in main.py):
+```python
+def register_error_handlers(app: Flask):
+    """Register global error handlers"""
+    
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            'error': 'not_found',
+            'message': 'The requested resource was not found'
+        }), 404
+    
+    @app.errorhandler(500)
+    def internal_error(error):
+        return jsonify({
+            'error': 'internal_server_error', 
+            'message': 'An internal server error occurred'
+        }), 500
+```
+
+### Blueprint-Specific Error Handling:
+```python
+# In blueprint files - handle feature-specific errors
+try:
+    # Business logic here
+    pass
+except SpecificError as e:
+    return jsonify({
+        'error': 'specific_error_code',
+        'message': str(e)
+    }), 400
+```
+
+## Best Practices
+
+### Main.py Best Practices:
+1. **Keep it minimal** - under 200 lines total
+2. **Use application factory pattern** - `create_app()` function
+3. **Separate blueprint registration** - dedicated function
+4. **Handle missing blueprints gracefully** - try/except blocks
+5. **Document blueprint dependencies** - which are required vs optional
+
+### Blueprint Best Practices:
+1. **One blueprint per major feature** - users, posts, auth, etc.
+2. **Clear naming convention** - `feature_bp` variable name
+3. **Comprehensive endpoint coverage** - CRUD + utilities
+4. **Consistent error responses** - match global format
+5. **Proper authentication** - use `@jwt_required()` consistently
+
+### File Organization:
+```
+backend/
+├── main.py              # Minimal app factory + blueprint registration
+├── config.py            # Configuration only
+├── database.py          # Models and DB setup
+├── blueprints/          # All API endpoints
+│   ├── __init__.py     # Empty or blueprint utilities
+│   ├── users.py        # User management endpoints
+│   └── [feature].py    # Other feature endpoints
+└── utils/              # Shared utilities (files, mail, etc.)
+```
+
+This architecture ensures clean separation of concerns, maintainable code, and scalable application structure.

@@ -1,0 +1,89 @@
+---
+alwaysApply: true
+description: Database testing guidelines for VCP project
+---
+
+# Database Testing Rules - VCP Project
+
+## Always Use Real Database Configuration
+
+**CRITICAL: Never use in-memory or temporary databases for testing in this project.**
+
+### ✅ Correct Testing Approach
+
+When creating tests or scripts that interact with the database:
+
+1. **Use actual database from environment:**
+   ```python
+   # CORRECT - Use real database from config
+   from config import Config
+   from main import create_app
+   from database import db, User
+   
+   app = create_app()  # Uses DATABASE_URL from .env
+   with app.app_context():
+       # Your test code here
+   ```
+
+2. **Reference the configured database:**
+   - Database configuration is in [config.py](mdc:backend/config.py)
+   - Always use `Config.SQLALCHEMY_DATABASE_URI` from environment
+   - Default database: `postgresql://vcp_user:vcp_password@localhost:5432/vcp_database`
+
+### ❌ Avoid These Patterns
+
+**Never override with temporary databases:**
+```python
+# WRONG - Don't override with in-memory database
+os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
+
+# WRONG - Don't use temporary SQLite files
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///temp.db'
+```
+
+### Testing Database Operations
+
+1. **Use the test user creation script:**
+   - Run [create_test_user.py](mdc:backend/create_test_user.py) to add test data
+   - This creates persistent test users in the real database
+
+2. **Clean up test data appropriately:**
+   ```python
+   # Clean up after tests by deactivating users or marking as test data
+   user.is_active = False  # Soft delete
+   # Don't hard delete unless absolutely necessary
+   ```
+
+3. **Check existing data before creating:**
+   ```python
+   # Always check if test data already exists
+   existing_user = User.find_by_email('test@example.com')
+   if existing_user:
+       print("Test user already exists")
+   else:
+       # Create new test user
+   ```
+
+### Database Utilities
+
+- **Migration script:** [migrate.py](mdc:backend/migrate.py) for schema changes
+- **Test user script:** [create_test_user.py](mdc:backend/create_test_user.py) for test data
+- **Main application:** [main.py](mdc:backend/main.py) handles database initialization
+
+### Environment Requirements
+
+Ensure `.env` file has correct database configuration:
+```env
+DATABASE_URL=postgresql://vcp_user:vcp_password@localhost:5432/vcp_database
+```
+
+### Integration with Conda Environment
+
+Always activate the vcp conda environment before database operations:
+```bash
+conda activate vcp
+python create_test_user.py
+python main.py
+```
+
+This ensures consistent database testing with the actual configured PostgreSQL database.

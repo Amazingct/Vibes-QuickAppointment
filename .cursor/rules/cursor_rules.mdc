@@ -1,0 +1,23 @@
+---
+description: Main project rules and guidelines
+alwaysApply: true
+---
+
+# VCP Project Guidelines
+
+## Technical Documentation
+For detailed technical specifications and implementation guidelines, refer to:
+- [Technical Rules](mdc:.cursor/rules/technical_rules.mdc) - Complete technical guidelines for backend and frontend development
+
+
+## General Principles
+
+- When writing documentations, keep things short and simple
+- Keep generated documents straightforward and simple
+- Write clean, readable, and maintainable code
+- Follow established project structure and naming conventions
+- Include proper error handling and validation
+- Write tests for new functionality
+- Document complex logic and API endpoints
+- Use AI assistance effectively with provided prompts
+- You can auto-improve this technical documents when necessary

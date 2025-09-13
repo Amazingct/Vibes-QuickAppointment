@@ -1,0 +1,204 @@
+---
+description: Postman collection template and guidelines for VCP project API testing
+---
+
+# Postman Collection Template - VCP Project
+
+## Complete Postman Collection Structure
+
+When creating or updating API endpoints, always maintain the [postman_collection.json](mdc:backend/docs/postman_collection.json) file with this structure:
+
+### Collection Variables Required
+```json
+"variable": [
+    {
+        "key": "base_url",
+        "value": "http://localhost:5002",
+        "type": "string",
+        "description": "Base URL for the VCP API server"
+    },
+    {
+        "key": "test_email",
+        "value": "test@example.com",
+        "type": "string",
+        "description": "Test user email for authentication"
+    },
+    {
+        "key": "test_password",
+        "value": "testpass123",
+        "type": "string",
+        "description": "Test user password for authentication"
+    },
+    {
+        "key": "access_token",
+        "value": "",
+        "type": "string",
+        "description": "JWT access token (automatically set after login/register)"
+    },
+    {
+        "key": "user_id",
+        "value": "",
+        "type": "string",
+        "description": "Current user ID (automatically set after login/register)"
+    }
+]
+```
+
+### Essential Endpoint Groups
+
+#### 1. Health & Info Endpoints
+```json
+{
+    "name": "Health Check",
+    "request": {
+        "method": "GET",
+        "url": "{{base_url}}/"
+    }
+},
+{
+    "name": "API Information", 
+    "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api"
+    }
+}
+```
+
+#### 2. Authentication Endpoints (with Auto-Token Saving)
+```json
+{
+    "name": "Register User",
+    "event": [
+        {
+            "listen": "test",
+            "script": {
+                "exec": [
+                    "if (pm.response.code === 201) {",
+                    "    const response = pm.response.json();",
+                    "    if (response.data && response.data.access_token) {",
+                    "        pm.collectionVariables.set('access_token', response.data.access_token);",
+                    "        pm.collectionVariables.set('user_id', response.data.user.id);",
+                    "    }",
+                    "}"
+                ]
+            }
+        }
+    ],
+    "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+            "mode": "raw",
+            "raw": "{\n    \"email\": \"{{test_email}}\",\n    \"password\": \"{{test_password}}\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\"\n}"
+        },
+        "url": "{{base_url}}/api/users/register"
+    }
+}
+```
+
+#### 3. Protected Endpoints (with Authorization)
+```json
+{
+    "name": "Get Current User",
+    "request": {
+        "method": "GET",
+        "header": [
+            {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+            }
+        ],
+        "url": "{{base_url}}/api/me"
+    }
+}
+```
+
+### Required Documentation Structure
+
+#### Collection Info Section
+```json
+"info": {
+    "name": "Vibe Coding Platform API",
+    "description": "Complete API collection with setup instructions:\n\n## Setup Instructions\n1. Start PostgreSQL: `cd backend/docs && docker-compose up -d`\n2. Start Flask server with env vars\n3. Use Register endpoint to get access token\n\n## Database Credentials\n- Host: localhost:5432\n- Database: vcp_database\n- Username: vcp_user\n- Password: vcp_password"
+}
+```
+
+### Endpoint Requirements
+
+#### Every Endpoint Must Include:
+1. **Proper HTTP method** (GET, POST, PUT, DELETE)
+2. **Correct URL** using `{{base_url}}` variable
+3. **Appropriate headers** (Content-Type, Authorization)
+4. **Sample request body** with realistic data
+5. **Clear description** explaining the endpoint purpose
+
+#### Authentication Endpoints Must:
+1. **Auto-save JWT tokens** using test scripts
+2. **Include complete registration payload** with all optional fields
+3. **Use collection variables** for test credentials
+
+#### Protected Endpoints Must:
+1. **Include Authorization header** with `Bearer {{access_token}}`
+2. **Use saved user_id variable** for user-specific operations
+3. **Handle pagination** for list endpoints
+
+### Testing Flow Pattern
+
+#### Recommended Test Sequence:
+1. **Health Check** → Verify server running
+2. **Register User** → Create account + save token
+3. **Login User** → Alternative token generation
+4. **Get Current User** → Test authentication
+5. **CRUD Operations** → Test all endpoints
+6. **Utility Endpoints** → Test search, validation
+
+### Database Integration Notes
+
+#### Environment Setup Required:
+```bash
+cd backend
+conda activate vcp
+DATABASE_URL="postgresql://vcp_user:vcp_password@localhost:5432/vcp_database" \
+SECRET_KEY="dev-secret" \
+JWT_SECRET_KEY="dev-jwt-secret" \
+python main.py
+```
+
+#### Test Database Connection:
+- Use [create_test_user.py](mdc:backend/create_test_user.py) to create persistent test data
+- Connect with DBeaver or pgAdmin to verify data
+- Always test with actual PostgreSQL database, never in-memory
+
+### Error Handling Standards
+
+#### All Endpoints Should Return:
+```json
+// Success Response
+{
+    "data": { ... },
+    "message": "Success message"
+}
+
+// Error Response  
+{
+    "error": "error_code",
+    "message": "Human readable error message"
+}
+```
+
+### Maintenance Guidelines
+
+#### When Adding New Endpoints:
+1. **Update postman_collection.json** immediately
+2. **Include in appropriate folder** (Auth, User Management, etc.)
+3. **Add realistic sample data** in request body
+4. **Test the endpoint** before committing
+5. **Update collection description** if needed
+
+#### When Modifying Existing Endpoints:
+1. **Update request/response samples** to match changes
+2. **Maintain backward compatibility** in collection variables
+3. **Test complete authentication flow** after changes
+4. **Verify auto-token management** still works
+
+This template ensures consistent, testable, and well-documented API collections for the VCP project.

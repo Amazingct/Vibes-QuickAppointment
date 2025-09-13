@@ -1,0 +1,137 @@
+---
+alwaysApply: true
+description: "Conda environment management for Python development"
+globs: backend/**/*.py,*.py,**/*.py
+---
+
+# Conda Environment Usage Guidelines
+
+## Environment Management
+
+**ALWAYS use conda environment 'vcp' for all Python operations in this project.**
+
+### Required Environment Activation
+
+Before running ANY Python commands, scripts, or tests, ensure the conda environment is activated:
+
+```bash
+conda activate vcp
+```
+
+### Environment Setup
+
+If the 'vcp' environment doesn't exist, create it:
+
+```bash
+conda create -n vcp python=3.11.3 -y
+conda activate vcp
+```
+
+### Testing and Development Workflow
+
+1. **Before Testing**: Always activate environment first
+   ```bash
+   conda activate vcp
+   python test_services.py
+   ```
+
+2. **Before Installing Dependencies**: 
+   ```bash
+   conda activate vcp
+   pip install -r backend/requirements.txt
+   ```
+
+3. **Before Running Scripts**:
+   ```bash
+   conda activate vcp
+   python backend/main.py
+   ```
+
+4. **Before Migration Operations**:
+   ```bash
+   conda activate vcp
+   python backend/migrate.py "Migration message"
+   ```
+
+### Key Files and Dependencies
+
+- **Requirements**: [backend/requirements.txt](mdc:backend/requirements.txt)
+- **Main App**: [backend/main.py](mdc:backend/main.py) 
+- **Migration**: [backend/migrate.py](mdc:backend/migrate.py)
+- **Test Suite**: [backend/test_services.py](mdc:backend/test_services.py)
+- **Configuration**: [backend/config.py](mdc:backend/config.py)
+
+### Environment Validation
+
+To verify the correct environment is active:
+```bash
+conda info --envs
+# Should show 'vcp' with an asterisk (*)
+```
+
+### NEVER Do These
+
+❌ **Don't run Python without conda environment**:
+```bash
+python test_services.py  # WRONG - missing conda activate
+```
+
+❌ **Don't install packages globally**:
+```bash
+pip install boto3  # WRONG - should be in vcp environment
+```
+
+❌ **Don't assume environment is active**:
+Always explicitly activate before any Python operation.
+
+### ✅ Always Do These
+
+✅ **Activate environment first**:
+```bash
+conda activate vcp
+python test_services.py
+```
+
+✅ **Install in environment**:
+```bash
+conda activate vcp
+pip install -r backend/requirements.txt
+```
+
+✅ **Check environment status**:
+```bash
+conda activate vcp
+conda list  # Verify packages are installed
+```
+
+## Integration with Project Tools
+
+### File Operations Testing
+```bash
+conda activate vcp
+cd backend
+python test_services.py
+```
+
+### Database Migration
+```bash
+conda activate vcp
+cd backend  
+python migrate.py "Add new field"
+```
+
+### Flask Development
+```bash
+conda activate vcp
+cd backend
+python main.py
+```
+
+### PDF Generation
+```bash
+conda activate vcp
+cd resources
+python to_pdf.py
+```
+
+**Environment consistency ensures reproducible development and testing across all project components.**

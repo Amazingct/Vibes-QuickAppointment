@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.venv/
+venv/
+ENV/
+
+# Git
+.git
+.gitignore
+
+# OS
+.DS_Store
+
+# Caches
+.mypy_cache/
+.pytest_cache/
+
+# Local env and logs
+.env
+.env.*
+*.log
+
+# Build artifacts
+/dist
+/build
+
+# Editor
+.vscode/
+.idea/
+
+# Data
+Downloaded/
