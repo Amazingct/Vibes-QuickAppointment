@@ -86,11 +86,6 @@ const Login: React.FC = () => {
 
         {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={otpMode ? handleVerify : handleSubmit}>
-          {signupSuccess && otpMode && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="text-sm text-green-700">Account created successfully. Please verify your email with the OTP sent.</p>
-            </div>
-          )}
           <div className="space-y-4">
             {/* Email Field */}
             <div>
