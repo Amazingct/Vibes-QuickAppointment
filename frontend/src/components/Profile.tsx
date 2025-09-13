@@ -119,7 +119,7 @@ const Profile: React.FC = () => {
             <EnvelopeIcon className="h-5 w-5 text-gray-400" />
             <div>
               <p className="text-sm text-gray-500">Last Updated</p>
-              <p className="font-semibold text-gray-900">{formatDate(user.updated_at)}</p>
+              <p className="font-semibold text-gray-900">{user.updated_at ? formatDate(user.updated_at) : '-'}</p>
             </div>
           </div>
           

@@ -71,7 +71,7 @@ const Navigation: React.FC = () => {
                   key={item.path}
                   to={disabled ? '#' : item.path}
                   onClick={(e) => { if (disabled) e.preventDefault(); }}
-                  aria-disabled={disabled}
+                  aria-disabled={disabled ? true : undefined}
                   title={disabled ? 'Please verify your email to access this section' : undefined}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
                     disabled
@@ -117,7 +117,7 @@ const Navigation: React.FC = () => {
                 key={item.path}
                 to={disabled ? '#' : item.path}
                 onClick={(e) => { if (disabled) e.preventDefault(); }}
-                aria-disabled={disabled}
+                aria-disabled={disabled ? true : undefined}
                 title={disabled ? 'Please verify your email to access this section' : undefined}
                 className={`flex items-center space-x-3 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
                   disabled

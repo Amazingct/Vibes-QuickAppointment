@@ -37,7 +37,7 @@ const Bookings: React.FC = () => {
   const [year, setYear] = useState<number>(today.getFullYear());
   const [monthIndex, setMonthIndex] = useState<number>(today.getMonth());
   const [selected, setSelected] = useState<BookingItem | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [_loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const [bookings, setBookings] = useState<BookingItem[]>([]);

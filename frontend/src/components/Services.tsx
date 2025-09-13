@@ -35,21 +35,21 @@ const Services: React.FC = () => {
   }, [allServices]);
 
   // Filter services based on current filters
-  const filteredServices = useMemo(() => {
-    return allServices.filter(service => {
-      const matchesSearch = !filters.search || 
-        service.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-        service.description.toLowerCase().includes(filters.search.toLowerCase());
-      
-      const matchesCategory = filters.category === 'All Categories' || 
-        service.category === filters.category;
-      
-      const matchesUsername = !filters.username || 
-        service.creator.username === filters.username;
-      
-      return matchesSearch && matchesCategory && matchesUsername;
-    });
-  }, [allServices, filters]);
+  // const filteredServices = useMemo(() => {
+  //   return allServices.filter(service => {
+  //     const matchesSearch = !filters.search || 
+  //       service.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+  //       service.description.toLowerCase().includes(filters.search.toLowerCase());
+  //     
+  //     const matchesCategory = filters.category === 'All Categories' || 
+  //       service.category === filters.category;
+  //     
+  //     const matchesUsername = !filters.username || 
+  //       service.creator.username === filters.username;
+  //     
+  //     return matchesSearch && matchesCategory && matchesUsername;
+  //   });
+  // }, [allServices, filters]);
 
   // Pagination (backend-based)
   const pagination: PaginationInfo = useMemo(() => ({

@@ -45,9 +45,9 @@ const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({ service, isOpen
     setCurrentImageIndex((prev) => (prev + 1) % service.images.length);
   };
 
-  const handleBook = () => {
-    if (onBook) onBook(service);
-  };
+  // const handleBook = () => {
+  //   if (onBook) onBook(service);
+  // };
 
   const providerId = useMemo(() => Number(service.creator.id), [service.creator.id]);
   const serviceId = useMemo(() => Number(service.id), [service.id]);

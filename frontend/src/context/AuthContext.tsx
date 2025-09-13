@@ -112,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = useCallback(async (email: string, username: string, password: string, firstName: string, lastName: string): Promise<boolean> => {
     try {
       dispatch({ type: 'CLEAR_ERROR' });
-      const response = await apiService.register({ email, username, password, first_name: firstName, last_name: lastName });
+      await apiService.register({ email, username, password, first_name: firstName, last_name: lastName });
       // Do not authenticate user on signup; require OTP verification first
       return true;
     } catch (error) {

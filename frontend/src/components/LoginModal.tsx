@@ -140,16 +140,16 @@ const LoginModal: React.FC<LoginModalProps> = ({
   };
 
   // Fill demo credentials
-  const fillDemoCredentials = () => {
-    setFormData({
-      email: 'test@example.com',
-      password: 'testpassword123',
-      firstName: '',
-      lastName: '',
-      username: '',
-    } as any);
-    setOtpMode(false);
-  };
+  // const fillDemoCredentials = () => {
+  //   setFormData({
+  //     email: 'test@example.com',
+  //     password: 'testpassword123',
+  //     firstName: '',
+  //     lastName: '',
+  //     username: '',
+  //   } as any);
+  //   setOtpMode(false);
+  // };
 
   if (!isOpen) return null;
 

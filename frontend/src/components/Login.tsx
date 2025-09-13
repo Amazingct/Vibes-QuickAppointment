@@ -11,7 +11,7 @@ const Login: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otpMode, setOtpMode] = useState(false);
   const [otp, setOtp] = useState('');
-  const [signupSuccess, setSignupSuccess] = useState(false);
+  // const [signupSuccess, setSignupSuccess] = useState(false); // not used in page login
 
   const { login, verifyOtp, resendOtp, error, clearError } = useAuth();
 
