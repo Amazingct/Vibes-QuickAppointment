@@ -16,8 +16,8 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # Initialize extensions
-    CORS(app, origins=Config.CORS_ORIGINS)
+    # Initialize extensions - Allow all origins (permissive CORS)
+    CORS(app, resources={r"/*": {"origins": "*"}})
     jwt = JWTManager(app)
     init_db(app)
     
@@ -154,7 +154,7 @@ if __name__ == '__main__':
         print("✓ Database tables created successfully")
     
     print(f"🚀 Starting VCP Backend on port {Config.PORT}")
-    print(f"🌐 CORS enabled for: {', '.join(Config.CORS_ORIGINS)}")
+    print("🌐 CORS enabled for: * (all origins)")
     print(f"🗄️  Database: {Config.SQLALCHEMY_DATABASE_URI.split('@')[1] if '@' in Config.SQLALCHEMY_DATABASE_URI else 'PostgreSQL'}")
     
     app.run(
