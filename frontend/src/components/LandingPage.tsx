@@ -55,6 +55,20 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-light-gray via-white to-light-gray">
+      {/* Masterclass Attribution Banner */}
+      <div className="w-full bg-indigo-50 border-b border-indigo-200 text-indigo-800 text-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 text-center">
+          This project was completed by students in the Vibe Coding Masterclass — Build and Deploy in 2 Days.{' '}
+          <a
+            href="https://curatelearn.com/events?event=f6943be4-b9b2-4b05-b475-896a579d54a8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium underline hover:text-indigo-900"
+          >
+            See more
+          </a>
+        </div>
+      </div>
       {/* Navigation */}
       <nav className={`bg-white/80 backdrop-blur-md border-b border-gray-200 fixed w-full z-50 transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

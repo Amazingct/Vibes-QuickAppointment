@@ -148,20 +148,12 @@ def signup():
             access_token = create_access_token(identity=str(user.id))
             refresh_token = create_refresh_token(identity=str(user.id))
             
-            data_resp: Dict[str, Any] = {
-                'user': user.to_json(),
-                'access_token': access_token,
-                'refresh_token': refresh_token
-            }
-            # In dev/test environments, include OTP preview to ease testing
-            try:
-                if getattr(Config, 'MAILTRAP', None) is not None or getattr(Config, 'DEBUG', False):
-                    data_resp['otp_preview'] = otp
-            except Exception:
-                pass
-
             return jsonify({
-                'data': data_resp,
+                'data': {
+                    'user': user.to_json(),
+                    'access_token': access_token,
+                    'refresh_token': refresh_token
+                },
                 'message': 'Account created successfully. Please verify your email with the OTP sent.'
             }), 201
             
@@ -414,14 +406,7 @@ def resend_otp():
         except Exception:
             pass
 
-        # Build response with optional otp preview in dev/test
-        resp: Dict[str, Any] = {'message': 'OTP resent successfully'}
-        try:
-            if getattr(Config, 'MAILTRAP', None) is not None or getattr(Config, 'DEBUG', False):
-                resp['data'] = {'otp_preview': otp}
-        except Exception:
-            pass
-        return jsonify(resp), 200
+        return jsonify({'message': 'OTP resent successfully'}), 200
     except Exception:
         return jsonify({'error': 'server_error', 'message': 'An unexpected error occurred'}), 500
 
